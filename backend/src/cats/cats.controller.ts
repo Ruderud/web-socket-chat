@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
-import { Cat, ErrorMsg } from './interfaces/cat.interfaces';
+import { Cat } from './interfaces/cat.interfaces';
 
 @Controller('cats')
 export class CatsController {
@@ -24,9 +24,10 @@ export class CatsController {
   findOne(@Query() params): string {
     try {
       const findResult: Cat = this.catsService.findOne(Number(params.age));
-      return `find ${params.age}years cat result: ${findResult.name}`;
+      return findResult.name;
     } catch (error) {
-      return `find ${params.age}years cat result: ${error}`;
+      console.log("can't Find" + params.age + error);
+      return "can't find";
     }
   }
 }
