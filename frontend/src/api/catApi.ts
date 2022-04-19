@@ -8,9 +8,13 @@ export interface Cat {
 }
 
 export const getCatByAge = async (age: number) => {
-  const response = await axiosInstance({}).get(`/cats?age=${age}`);
-  console.log(response.data);
-  return response.data;
+  try {
+    const response = await axiosInstance().get(`/cats?age=${age}`);
+    return response.data;
+  } catch (error) {
+    return `${error}`;
+    // console.log(response.data, response.status);
+  }
 };
 
 export const postNewCat = async (newCat: Cat) => {
