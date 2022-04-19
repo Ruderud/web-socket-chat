@@ -12,12 +12,17 @@ export class CatsService {
   ];
 
   create(cat: Cat) {
+    const alreadyAdded = this.cats.some((curCat) => curCat.name === cat.name);
+
+    if (alreadyAdded) return;
+
     this.cats.push({
       age: Number(cat.age),
       breed: cat.breed,
       name: cat.name,
     });
     console.log('new', this.cats);
+    return cat;
   }
 
   findAll(): Cat[] {

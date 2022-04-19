@@ -24,12 +24,12 @@ export class CatsController {
   @Post()
   async create(@Body() createCatDto: CreateCatDto) {
     try {
+      this.catsService.create(createCatDto);
+      return;
     } catch (error) {
       console.log(error);
-      return;
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
     }
-
-    this.catsService.create(createCatDto);
   }
 
   @Get()
@@ -40,7 +40,7 @@ export class CatsController {
       return findResult.name;
     } catch (error) {
       console.log("can't Find" + params.age + 'cat', HttpStatus.BAD_REQUEST);
-      throw new HttpException('Forbidden', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
     }
   }
 }
