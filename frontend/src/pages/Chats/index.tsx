@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import RenderChatList from "./RenderChatList";
 import "./style.css";
 
-import io from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+import { socketInstance } from "../../api/socketInstance";
 
 export interface Chat {
   createAt: number;
@@ -30,11 +31,15 @@ const generateDummyChats = (count: number): Array<Chat> => {
 const INITIAL_DUMMY_CHATS_CNT = 30;
 
 export default function Chats(): JSX.Element {
-  const [chatList, setChatList] = useState<Array<Chat>>(
-    generateDummyChats(INITIAL_DUMMY_CHATS_CNT)
-  );
+  const [chatList, setChatList] = useState<Array<Chat>>([]);
+  const chatListRef = useRef(chatList);
   const [nowMessage, setNowMessage] = useState<string>("");
   const [isComposing, setIsComposing] = useState<boolean>(false);
+  // const [socket, setSocket] = useState<Socket>();
+
+  const [randomUID, setUID] = useState<string>(
+    String(Math.floor(Math.random() * 1000000))
+  );
 
   const handleMessageInput = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setNowMessage(evt.target.value);
@@ -44,14 +49,14 @@ export default function Chats(): JSX.Element {
     if (!nowMessage) return;
     if (isComposing) return;
     if (evt.key === "Enter") {
-      setChatList([
-        ...chatList,
-        {
-          UID: "me",
-          createAt: Date.now(),
-          text: nowMessage,
-        },
-      ]);
+      const time = Date.now();
+      socketRef.current?.emit("reciveChat", {
+        UID: randomUID,
+        createAt: time,
+        text: nowMessage,
+      });
+      console.log("now send message");
+
       setNowMessage("");
     }
   };
@@ -60,25 +65,61 @@ export default function Chats(): JSX.Element {
     if (!nowMessage) return;
 
     if (evt.type === "click") {
-      setChatList([
-        ...chatList,
-        {
-          UID: "me",
-          createAt: Date.now(),
-          text: nowMessage,
-        },
-      ]);
+      const time = Date.now();
+      socketRef.current?.emit("reciveChat", {
+        UID: randomUID,
+        createAt: time,
+        text: nowMessage,
+      });
+
       setNowMessage("");
     }
   };
 
-  // const socet
+  const socketDisconnect = (socket: Socket) => {
+    if (!socket.connected) return;
 
-  // useEffect(,[])
+    socket.on("disconnect", () => {
+      console.log("webSocket disconnect");
+    });
+  };
+
+  const setChatListRef = useRef(setChatList);
+
+  const socketRef = useRef<Socket>();
+  const [s, setS] = useState<any>();
+
+  const socketConnection = () => {
+    // const connectedSocket = socketInstance();
+    // setSocket(connectedSocket);
+    socketRef.current = socketInstance();
+    setS(socketRef.current);
+
+    socketRef.current.on("sendChat", (res: Chat) => {
+      console.log("recived Chats:", res);
+
+      console.log(chatList);
+      setChatList([...chatList, res]);
+    });
+    if (!socketRef.current?.connected) return;
+
+    return socketDisconnect(socketRef.current);
+  };
+
+  useEffect(socketConnection, []);
+
+  useEffect(() => {
+    socketRef.current!.on("sendChat", (res: Chat) => {
+      console.log("recived Chats:", res);
+
+      console.log(chatList);
+      setChatList([...chatList, res]);
+    });
+  }, [chatList]);
 
   return (
     <div className="chatContainer">
-      <RenderChatList chatList={chatList} />
+      <RenderChatList chatList={chatList} myUID={randomUID} />
       <div className="chatWriteContainer">
         <input
           className="chatInput"
@@ -92,22 +133,8 @@ export default function Chats(): JSX.Element {
         <button className="chatSendBtn" onClick={sendMessageByClick}>
           send
         </button>
-        <button
-          onClick={() => {
-            const socket = io("ws://localhost:81/chats", {
-              transports: ["websocket"],
-            });
-            console.log(socket);
-
-            socket.on("connect", () => {
-              console.log("connected", socket);
-              socket.emit("chats", { message: nowMessage });
-            });
-          }}
-        >
-          socketConnect
-        </button>
       </div>
+      <div>MyUID: {randomUID}</div>
     </div>
   );
 }

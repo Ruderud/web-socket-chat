@@ -1,10 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-const BASE_URL = "http://localhost:4400";
-
 export const axiosInstance = (config?: AxiosRequestConfig): AxiosInstance => {
   const createInstance = axios.create({
-    baseURL: BASE_URL,
+    baseURL: import.meta.env.VITE_BASEURL,
     timeout: 5 * 1000,
     ...config,
     headers: {

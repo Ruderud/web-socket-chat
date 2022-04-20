@@ -7,6 +7,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketServer,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket } from 'dgram';
 import { Server } from 'http';
@@ -14,7 +15,7 @@ import { ChatsService } from './chats.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
-@WebSocketGateway(81, { namespace: 'chats', transports: ['websocket'] })
+@WebSocketGateway(443, { namespace: 'chats', transports: ['websocket'] })
 export class ChatsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -32,7 +33,27 @@ export class ChatsGateway
 
   @SubscribeMessage('chats')
   handleEvent(@MessageBody() data: string): string {
-    console.log(data);
+    console.log('recived text : ', data);
+    return data;
+  }
+
+  @SubscribeMessage('reciveChat')
+  reciveMessage(
+    @MessageBody() data: any, // 클라이언트로부터 들어온 데이터
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log('reciveData:', data);
+
+    this.server.emit('sendChat', data);
+  }
+
+  @SubscribeMessage('sendChat')
+  sendMessage(
+    @MessageBody() data: any, // 클라이언트로부터 들어온 데이터
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log('reciveData:', data);
+
     return data;
   }
 

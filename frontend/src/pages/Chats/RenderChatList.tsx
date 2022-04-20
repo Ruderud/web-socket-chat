@@ -3,9 +3,11 @@ import { Chat } from "./index";
 
 interface RenderChatListProps {
   chatList: Array<Chat>;
+  myUID: string;
 }
 export default function RenderChatList({
   chatList,
+  myUID,
 }: RenderChatListProps): JSX.Element {
   const chatListEndRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +23,7 @@ export default function RenderChatList({
         return (
           <div
             key={chat.createAt + idx}
-            className={chat.UID !== "me" ? "otherChat" : "myChat"}
+            className={chat.UID !== myUID ? "otherChat" : "myChat"}
           >
             {(chat.UID !== "me" ? chat.UID + " : " : "") + chat.text}
           </div>
