@@ -15,7 +15,7 @@
 .otherChat {
   display: flex;
   align-items: center;
-  background: #ebab50;
+  background: #eac086;
   margin: 5px;
   border-radius: 3px;
   padding: 5px 10px 5px 10px;
@@ -28,7 +28,7 @@
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
-  background: #ebab50;
+  background: #c9f092;
   margin: 5px;
   border-radius: 3px;
   width: fit-content;
@@ -36,12 +36,34 @@
   border: 1px solid #6d2c2c;
   margin-left: auto;
   padding: 5px 10px 5px 10px;
+  margin-right: 20px;
+}
+
+.chatWriteContainer {
+  box-shadow: 0 0 0 1px#000 inset;
+  height: 30px;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 5px;
+  margin-top: 5px;
 }
 
 .chatInput {
-  width: 65%;
+  flex: 1;
+  outline: none;
+  border: none;
+  background-color: rgb(227, 227, 227);
+  border-radius: 5px;
+  padding-left: 10px;
+  margin-right: 10px;
 }
 
 .chatSendBtn {
-  width: 30%;
+  width: 20%;
+  outline: none;
+  border: none;
+  color: rgb(227, 227, 227);
+  border-radius: 5px;
+  background-color: rgb(33, 33, 33);
 }

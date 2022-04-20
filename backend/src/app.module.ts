@@ -16,9 +16,10 @@ import { CatsModule } from './cats/cats.module';
 import { CatsController } from './cats/cats.controller';
 
 import { FrogModule } from './frog/frog.module';
+import { ChatsModule } from './chats/chats.module';
 
 @Module({
-  imports: [FrogModule, CatsModule],
+  imports: [FrogModule, CatsModule, ChatsModule],
   controllers: [AppController],
   providers: [AppService],
 })

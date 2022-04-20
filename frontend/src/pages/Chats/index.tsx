@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
+import RenderChatList from "./RenderChatList";
 import "./style.css";
 
-interface Chat {
+import io from "socket.io-client";
+
+export interface Chat {
   createAt: number;
   text: string;
   UID: string;
@@ -32,13 +35,6 @@ export default function Chats(): JSX.Element {
   );
   const [nowMessage, setNowMessage] = useState<string>("");
   const [isComposing, setIsComposing] = useState<boolean>(false);
-  const chatListEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    chatListEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(scrollToBottom, [chatList]);
 
   const handleMessageInput = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setNowMessage(evt.target.value);
@@ -76,22 +72,14 @@ export default function Chats(): JSX.Element {
     }
   };
 
+  // const socet
+
+  // useEffect(,[])
+
   return (
     <div className="chatContainer">
-      <div className="chatListBox">
-        {chatList.map((chat, idx) => {
-          return (
-            <div
-              key={chat.createAt + idx}
-              className={chat.UID !== "me" ? "otherChat" : "myChat"}
-            >
-              {(chat.UID !== "me" ? chat.UID + " : " : "") + chat.text}
-            </div>
-          );
-        })}
-        <div ref={chatListEndRef} />
-      </div>
-      <div>
+      <RenderChatList chatList={chatList} />
+      <div className="chatWriteContainer">
         <input
           className="chatInput"
           type="text"
@@ -103,6 +91,21 @@ export default function Chats(): JSX.Element {
         />
         <button className="chatSendBtn" onClick={sendMessageByClick}>
           send
+        </button>
+        <button
+          onClick={() => {
+            const socket = io("ws://localhost:81/chats", {
+              transports: ["websocket"],
+            });
+            console.log(socket);
+
+            socket.on("connect", () => {
+              console.log("connected", socket);
+              socket.emit("chats", { message: nowMessage });
+            });
+          }}
+        >
+          socketConnect
         </button>
       </div>
     </div>
