@@ -20,42 +20,8 @@ export class ChatsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(private readonly chatsService: ChatsService) {}
-
-  // @SubscribeMessage('chats')
-  // handleEvent(@MessageBody() data: string): string {
-  //   return data;
-  // }
-  // @SubscribeMessage('events')
-  // say;
-
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('AppGateway');
-
-  @SubscribeMessage('chats')
-  handleEvent(@MessageBody() data: string): string {
-    console.log('recived text : ', data);
-    return data;
-  }
-
-  @SubscribeMessage('reciveChat')
-  reciveMessage(
-    @MessageBody() data: any, // 클라이언트로부터 들어온 데이터
-    @ConnectedSocket() client: Socket,
-  ) {
-    console.log('reciveData:', data);
-
-    this.server.emit('sendChat', data);
-  }
-
-  @SubscribeMessage('sendChat')
-  sendMessage(
-    @MessageBody() data: any, // 클라이언트로부터 들어온 데이터
-    @ConnectedSocket() client: Socket,
-  ) {
-    console.log('reciveData:', data);
-
-    return data;
-  }
 
   afterInit(server: Server) {
     this.logger.log('Init');
@@ -69,28 +35,14 @@ export class ChatsGateway
     this.logger.log(`Client Connected : ${client}`);
   }
 
-  @SubscribeMessage('createChat')
-  create(@MessageBody() createChatDto: CreateChatDto) {
-    return this.chatsService.create(createChatDto);
-  }
+  @SubscribeMessage('chatToServer')
+  handleEvent(
+    @MessageBody() data: any, // 클라이언트로부터 들어온 데이터
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log('챗받음:', data);
 
-  @SubscribeMessage('findAllChats')
-  findAll() {
-    return this.chatsService.findAll();
-  }
-
-  @SubscribeMessage('findOneChat')
-  findOne(@MessageBody() id: number) {
-    return this.chatsService.findOne(id);
-  }
-
-  @SubscribeMessage('updateChat')
-  update(@MessageBody() updateChatDto: UpdateChatDto) {
-    return this.chatsService.update(updateChatDto.id, updateChatDto);
-  }
-
-  @SubscribeMessage('removeChat')
-  remove(@MessageBody() id: number) {
-    return this.chatsService.remove(id);
+    this.server.emit('chatToClient', data);
+    console.log('받은것 뿌림', data.text);
   }
 }

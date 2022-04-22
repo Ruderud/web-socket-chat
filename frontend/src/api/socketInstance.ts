@@ -1,10 +1,11 @@
 import { io, Socket } from "socket.io-client";
 
 const PORT = 443;
-export const socketInstance = (): Socket => {
+export const socketInstance = (): Socket | undefined => {
   try {
     const connectedSocket = io(
       `${import.meta.env.VITE_APP_SOCKETURL}:${PORT}/chats`,
+      // "ws://localhost:443/chats",
       {
         transports: ["websocket"],
       }
@@ -16,6 +17,7 @@ export const socketInstance = (): Socket => {
 
     return connectedSocket;
   } catch (error) {
-    throw new Error(error);
+    // throw new Error(error);
+    return undefined;
   }
 };
