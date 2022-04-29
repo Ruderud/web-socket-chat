@@ -75,6 +75,7 @@ export default function Chats(): JSX.Element {
   return (
     <div className="chatContainer">
       <RenderChatList chatList={chatList} myUID={randomUID} />
+      <div className="userInfoContainer">MyUID: {randomUID}</div>
       <div className="chatWriteContainer">
         <input
           className="chatInput"
@@ -89,7 +90,6 @@ export default function Chats(): JSX.Element {
           send
         </button>
       </div>
-      <div>MyUID: {randomUID}</div>
     </div>
   );
 }
